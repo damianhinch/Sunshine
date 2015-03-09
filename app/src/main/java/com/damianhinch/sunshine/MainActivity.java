@@ -44,17 +44,19 @@ public class MainActivity extends ActionBarActivity {
         ListView listView = (ListView) findViewById(R.id.weater_list_view);
         listView.setAdapter(arrayAdapter);
 
-        new makeApiCallAsyncTask().execute("");
+        new fetchWeatherAsyncTask().execute("");
     }
 
-    private class makeApiCallAsyncTask extends AsyncTask<String, Void, String> {
+    private class fetchWeatherAsyncTask extends AsyncTask<String, Void, String> {
+
+        // onPreExecute is run in th main thread and can be used to set up interface stuff like a loading bar
 
         @Override
-        protected String doInBackground(final String... params) {
-            return makeApiCall(URL);
+        protected String doInBackground(final String... params) { // Run immediately after onPreExecute and gets given the parameters for the task
+            return fetchWeather(URL);
         }
 
-        private String makeApiCall(final String apiCall) {
+        private String fetchWeather(final String apiCall) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -72,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
+                urlConnection.connect(); // This will throw an Exception (NetworkOnMainThread) so this needs to be done as an AsyncTask
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
