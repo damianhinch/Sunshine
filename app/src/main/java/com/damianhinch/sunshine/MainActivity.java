@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -36,15 +37,17 @@ public class MainActivity extends ActionBarActivity {
                 "Saturday",
                 "Sunday");
         // Adapter - bind raw data to ListView - requires a ListView item, and what to but there
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_text_view,
                 arrayList);
         // ListView - Display it
-        ListView listView = (ListView) findViewById(R.id.weater_list_view);
+        ListView listView = (ListView) findViewById(R.id.weather_list_view);
         listView.setAdapter(arrayAdapter);
 
         new fetchWeatherAsyncTask().execute("");
+
+
     }
 
     private class fetchWeatherAsyncTask extends AsyncTask<String, Void, String> {
@@ -67,14 +70,14 @@ public class MainActivity extends ActionBarActivity {
 
             try {
                 // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
+                // Possible parameters are available at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
                 URL url = new URL(apiCall);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
-                urlConnection.connect(); // This will throw an Exception (NetworkOnMainThread) so this needs to be done as an AsyncTask
+                urlConnection.connect(); // This would throw an Exception (NetworkOnMainThread) so this needs to be done as an AsyncTask
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
@@ -125,12 +128,12 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -8,10 +8,9 @@
   >
 
   <ListView
-    android:id="@+id/weater_list_view"
+    android:id="@+id/weather_list_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
   </ListView>
 
 
