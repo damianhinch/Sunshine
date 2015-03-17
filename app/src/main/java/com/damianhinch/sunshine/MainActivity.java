@@ -1,5 +1,6 @@
 package com.damianhinch.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +26,8 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     public static final String URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+    public static final String POST_CODE = "10247";
+    public static final int NUM_DAYS = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +50,20 @@ public class MainActivity extends ActionBarActivity {
         ListView listView = (ListView) findViewById(R.id.weather_list_view);
         listView.setAdapter(arrayAdapter);
 
-        new fetchWeatherAsyncTask().execute("");
-
+        new FetchWeatherAsyncTask().execute(POST_CODE);
 
     }
 
-    private class fetchWeatherAsyncTask extends AsyncTask<String, Void, String> {
+    private class FetchWeatherAsyncTask extends AsyncTask<String, Void, String> {
 
         // onPreExecute is run in th main thread and can be used to set up interface stuff like a loading bar
 
         @Override
         protected String doInBackground(final String... params) { // Run immediately after onPreExecute and gets given the parameters for the task
-            return fetchWeather(URL);
+            return fetchWeather(params);
         }
 
-        private String fetchWeather(final String apiCall) {
+        private String fetchWeather(String[] params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -67,6 +71,10 @@ public class MainActivity extends ActionBarActivity {
 
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
+
+            String postalCode = params[0];
+
+            final String apiCall = getUri(POST_CODE, NUM_DAYS);
 
             try {
                 // Construct the URL for the OpenWeatherMap query
@@ -118,12 +126,32 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             }
-
             return forecastJsonStr;
         }
+
+        private String getUri(final String postCode, int numDays) {
+
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("http")
+                    .authority("api.openweathermap.org")
+                    .appendPath("data")
+                    .appendPath("2.5")
+                    .appendPath("forecast")
+                    .appendPath("daily")
+                    .appendQueryParameter("q", postCode)
+                    .appendQueryParameter("mode", "json")
+                    .appendQueryParameter("unit", "metric")
+                    .appendQueryParameter("cnt", String.valueOf(numDays))
+                    .fragment("section-name");
+            return builder.build().toString();
+        }
+
         @Override
-        protected void onPostExecute(final String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(final String forecastJsonStr) {
+            super.onPostExecute(forecastJsonStr);
+            if (forecastJsonStr != null) {
+                Log.v("Dogs are sad", forecastJsonStr);
+            }
         }
 
     }
@@ -145,6 +173,10 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id== R.id.refresh_button){
+            new FetchWeatherAsyncTask().execute(POST_CODE);
             return true;
         }
 
