@@ -11,6 +11,10 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +33,7 @@ public class MainActivity extends ActionBarActivity {
     public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
                 "Tuesday",
                 "Wednesday",
                 "Thursday",
-                "Friday" ,
+                "Friday",
                 "Saturday",
                 "Sunday");
         // Adapter - bind raw data to ListView - requires a ListView item, and what to but there
@@ -153,7 +158,6 @@ public class MainActivity extends ActionBarActivity {
                 Log.v("Dogs are sad", forecastJsonStr);
             }
         }
-
     }
 
     @Override
@@ -175,13 +179,14 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        if (id== R.id.refresh_button){
+        if (id == R.id.refresh_button) {
             new FetchWeatherAsyncTask().execute(POST_CODE);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-}
 
+
+}
 
