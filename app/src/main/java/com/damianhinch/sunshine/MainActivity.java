@@ -21,15 +21,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    public static final String URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+    //    public static final String URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
     public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
     public static final String LOG_TAG = "DOGS ARE MAD";
@@ -53,24 +53,44 @@ public class MainActivity extends ActionBarActivity {
         }
 
         private String[] fetchWeather(String[] params) {
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
-
             String postalCode = params[0];
-
             final String apiCall = getUri(postalCode, NUM_DAYS);
 
-            try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are available at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-                URL url = new URL(apiCall);
+            forecastJsonStr = getForecastJsonString(apiCall);
 
+            try {
+                return getWeatherDataFromJson(forecastJsonStr, NUM_DAYS);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                return null;
+            }
+
+        }
+
+        private void closeReader(final BufferedReader reader) {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e("PlaceholderFragment", "Error closing stream", e);
+                }
+            }
+        }
+
+        private void closeUrlConnection(final HttpURLConnection urlConnection) {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+
+        private String getForecastJsonString(final String apiCall) {
+            // These two need to be declared outside the try/catch so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL(apiCall);
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -97,31 +117,14 @@ public class MainActivity extends ActionBarActivity {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
-                forecastJsonStr = buffer.toString();
+                return buffer.toString();
             } catch (IOException e) {
-                Log.e("PlaceholderFragment", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
+                Log.e(LOG_TAG, e.toString(), e);
                 return null;
             } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("PlaceholderFragment", "Error closing stream", e);
-                    }
-                }
+                closeUrlConnection(urlConnection);
+                closeReader(reader);
             }
-            try {
-                return getWeatherDataFromJson(forecastJsonStr, NUM_DAYS);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                return null;
-            }
-
         }
 
         private String getUri(final String postCode, int numDays) {
