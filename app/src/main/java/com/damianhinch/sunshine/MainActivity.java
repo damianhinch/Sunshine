@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 
@@ -33,14 +34,22 @@ public class MainActivity extends ActionBarActivity {
     public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
     public static final String LOG_TAG = "DOGS ARE MAD";
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        listView = (ListView) findViewById(R.id.weather_list_view);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                final String text = listView.getItemAtPosition(position).toString();
+                Toast toast = Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
         new FetchWeatherAsyncTask().execute(POST_CODE);
-
     }
 
     private class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]> {
@@ -95,29 +104,20 @@ public class MainActivity extends ActionBarActivity {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect(); // This would throw an Exception (NetworkOnMainThread) so this needs to be done as an AsyncTask
-
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    // Nothing to do.
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
+                readBuffer(reader, buffer);
 
                 if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
                     return null;
                 }
                 return buffer.toString();
+
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.toString(), e);
                 return null;
@@ -127,9 +127,21 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        private void readBuffer(final BufferedReader reader, final StringBuffer buffer) throws IOException {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+        }
+
         private String getUri(final String postCode, int numDays) {
 
             Uri.Builder builder = new Uri.Builder();
+            buildUri(postCode, numDays, builder);
+            return builder.build().toString();
+        }
+
+        private void buildUri(final String postCode, final int numDays, final Uri.Builder builder) {
             builder.scheme("http")
                     .authority("api.openweathermap.org")
                     .appendPath("data")
@@ -141,7 +153,6 @@ public class MainActivity extends ActionBarActivity {
                     .appendQueryParameter("unit", "metric")
                     .appendQueryParameter("cnt", String.valueOf(numDays))
                     .fragment("section-name");
-            return builder.build().toString();
         }
 
         @Override
@@ -153,7 +164,6 @@ public class MainActivity extends ActionBarActivity {
                     R.id.list_item_forecast_text_view,
                     forecastJsonStr);
             // ListView - Display it
-            ListView listView = (ListView) findViewById(R.id.weather_list_view);
             listView.setAdapter(arrayAdapter);
         }
     }
