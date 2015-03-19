@@ -1,5 +1,6 @@
 package com.damianhinch.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -21,11 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-
 
 public class MainActivity extends ActionBarActivity {
 
@@ -33,14 +32,23 @@ public class MainActivity extends ActionBarActivity {
     public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
     public static final String LOG_TAG = "DOGS ARE MAD";
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        listView = (ListView) findViewById(R.id.weather_list_view);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                final String text = listView.getItemAtPosition(position).toString();
+                Intent launchDetailView = new Intent(MainActivity.this, DetailView.class);
+                launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
+                startActivity(launchDetailView);
+            }
+        });
         new FetchWeatherAsyncTask().execute(POST_CODE);
-
     }
 
     private class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]> {
@@ -74,7 +82,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e("PlaceholderFragment", "Error closing stream", e);
+                    Log.e("DetailViewFragment", "Error closing stream", e);
                 }
             }
         }
@@ -91,33 +99,25 @@ public class MainActivity extends ActionBarActivity {
             BufferedReader reader = null;
             try {
                 URL url = new URL(apiCall);
+                Log.v("API call", apiCall);
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect(); // This would throw an Exception (NetworkOnMainThread) so this needs to be done as an AsyncTask
-
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    // Nothing to do.
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
+                readBuffer(reader, buffer);
 
                 if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
                     return null;
                 }
                 return buffer.toString();
+
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.toString(), e);
                 return null;
@@ -127,9 +127,21 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        private void readBuffer(final BufferedReader reader, final StringBuffer buffer) throws IOException {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+        }
+
         private String getUri(final String postCode, int numDays) {
 
             Uri.Builder builder = new Uri.Builder();
+            buildUri(postCode, numDays, builder);
+            return builder.build().toString();
+        }
+
+        private void buildUri(final String postCode, final int numDays, final Uri.Builder builder) {
             builder.scheme("http")
                     .authority("api.openweathermap.org")
                     .appendPath("data")
@@ -139,9 +151,7 @@ public class MainActivity extends ActionBarActivity {
                     .appendQueryParameter("q", postCode)
                     .appendQueryParameter("mode", "json")
                     .appendQueryParameter("unit", "metric")
-                    .appendQueryParameter("cnt", String.valueOf(numDays))
-                    .fragment("section-name");
-            return builder.build().toString();
+                    .appendQueryParameter("cnt", String.valueOf(numDays));
         }
 
         @Override
@@ -153,7 +163,6 @@ public class MainActivity extends ActionBarActivity {
                     R.id.list_item_forecast_text_view,
                     forecastJsonStr);
             // ListView - Display it
-            ListView listView = (ListView) findViewById(R.id.weather_list_view);
             listView.setAdapter(arrayAdapter);
         }
     }
@@ -168,12 +177,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -188,92 +192,50 @@ public class MainActivity extends ActionBarActivity {
     private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
             throws JSONException {
 
-        // These are the names of the JSON objects that need to be extracted.
         final String OWM_LIST = "list";
+        JSONObject forecastJson = new JSONObject(forecastJsonStr);
+        JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+
+        Time dayTime = new Time();
+        dayTime.setToNow();
+
+        int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
+
+        dayTime = new Time();
+
+        return getWeatherDataStringsFrom(numDays, weatherArray, dayTime, julianStartDay);
+
+    }
+
+    private String[] getWeatherDataStringsFrom(final int numDays, final JSONArray weatherArray, final Time dayTime, final int julianStartDay) throws JSONException {
+
         final String OWM_WEATHER = "weather";
         final String OWM_TEMPERATURE = "temp";
         final String OWM_MAX = "max";
         final String OWM_MIN = "min";
         final String OWM_DESCRIPTION = "main";
-
-        JSONObject forecastJson = new JSONObject(forecastJsonStr);
-        JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
-
-        // OWM returns daily forecasts based upon the local time of the city that is being
-        // asked for, which means that we need to know the GMT offset to translate this data
-        // properly.
-
-        // Since this data is also sent in-order and the first day is always the
-        // current day, we're going to take advantage of that to get a nice
-        // normalized UTC date for all of our weather.
-
-        Time dayTime = new Time();
-        dayTime.setToNow();
-
-        // we start at the day returned by local time. Otherwise this is a mess.
-        int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-        // now we work exclusively in UTC
-        dayTime = new Time();
-
         String[] resultStrings = new String[numDays];
         for (int i = 0; i < weatherArray.length(); i++) {
-            // For now, using the format "Day, description, hi/low"
             String day;
             String description;
             String highAndLow;
 
-            // Get the JSON object representing the day
             JSONObject dayForecast = weatherArray.getJSONObject(i);
 
-            // The date/time is returned as a long.  We need to convert that
-            // into something human-readable, since most people won't read "1400356800" as
-            // "this saturday".
             long dateTime;
-            // Cheating to convert this to UTC time, which is what we want anyhow
             dateTime = dayTime.setJulianDay(julianStartDay + i);
-            day = getReadableDateString(dateTime);
+            day = Helpers.getReadableDateString(dateTime);
 
-            // description is in a child array called "weather", which is 1 element long.
             JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
             description = weatherObject.getString(OWM_DESCRIPTION);
 
-            // Temperatures are in a child object called "temp".  Try not to name variables
-            // "temp" when working with temperature.  It confuses everybody.
             JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
             double high = temperatureObject.getDouble(OWM_MAX);
             double low = temperatureObject.getDouble(OWM_MIN);
 
-            highAndLow = formatHighLows(high, low);
+            highAndLow = Helpers.formatHighLows(high, low);
             resultStrings[i] = day + " - " + description + " - " + highAndLow;
         }
-
         return resultStrings;
-
     }
-
-    /* The date/time conversion code is going to be moved outside the asynctask later,
-        * so for convenience we're breaking it out into its own method now.
-        */
-    private String getReadableDateString(long time) {
-        // Because the API returns a unix timestamp (measured in seconds),
-        // it must be converted to milliseconds in order to be converted to valid date.
-        SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
-        return shortenedDateFormat.format(time);
-    }
-
-    /**
-     * Prepare the weather high/lows for presentation.
-     */
-    private String formatHighLows(double high, double low) {
-        // For presentation, assume the user doesn't care about tenths of a degree.
-        long roundedHigh = Math.round(high);
-        long roundedLow = Math.round(low);
-
-        String highLowStr = roundedHigh + "/" + roundedLow;
-        return highLowStr;
-    }
-
-
 }
-
