@@ -83,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e("PlaceholderFragment", "Error closing stream", e);
+                    Log.e("DetailViewFragment", "Error closing stream", e);
                 }
             }
         }
