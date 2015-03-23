@@ -57,6 +57,15 @@ public class DetailView extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail_view, container, false);
+
+            Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+                TextView textView;
+                textView = (TextView) rootView.findViewById(R.id.detail_view_text_view_date_day);
+                String stringExtra = intent.getStringExtra(Intent.EXTRA_TEXT);
+                textView.setText(stringExtra);
+            }
+
             return rootView;
         }
     }

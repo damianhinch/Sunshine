@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,6 +99,7 @@ public class MainActivity extends ActionBarActivity {
             BufferedReader reader = null;
             try {
                 URL url = new URL(apiCall);
+                Log.v("API call", apiCall);
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -151,8 +151,7 @@ public class MainActivity extends ActionBarActivity {
                     .appendQueryParameter("q", postCode)
                     .appendQueryParameter("mode", "json")
                     .appendQueryParameter("unit", "metric")
-                    .appendQueryParameter("cnt", String.valueOf(numDays))
-                    .fragment("section-name");
+                    .appendQueryParameter("cnt", String.valueOf(numDays));
         }
 
         @Override
