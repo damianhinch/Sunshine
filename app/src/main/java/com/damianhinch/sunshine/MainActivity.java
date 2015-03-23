@@ -192,12 +192,6 @@ public class MainActivity extends ActionBarActivity {
             throws JSONException {
 
         final String OWM_LIST = "list";
-        final String OWM_WEATHER = "weather";
-        final String OWM_TEMPERATURE = "temp";
-        final String OWM_MAX = "max";
-        final String OWM_MIN = "min";
-        final String OWM_DESCRIPTION = "main";
-
         JSONObject forecastJson = new JSONObject(forecastJsonStr);
         JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
@@ -208,12 +202,17 @@ public class MainActivity extends ActionBarActivity {
 
         dayTime = new Time();
 
-        String[] resultStrings = getWeatherDataStringsFrom(numDays, OWM_WEATHER, OWM_TEMPERATURE, OWM_MAX, OWM_MIN, OWM_DESCRIPTION, weatherArray, dayTime, julianStartDay);
-        return resultStrings;
+        return getWeatherDataStringsFrom(numDays, weatherArray, dayTime, julianStartDay);
 
     }
 
-    private String[] getWeatherDataStringsFrom(final int numDays, final String OWM_WEATHER, final String OWM_TEMPERATURE, final String OWM_MAX, final String OWM_MIN, final String OWM_DESCRIPTION, final JSONArray weatherArray, final Time dayTime, final int julianStartDay) throws JSONException {
+    private String[] getWeatherDataStringsFrom(final int numDays, final JSONArray weatherArray, final Time dayTime, final int julianStartDay) throws JSONException {
+
+        final String OWM_WEATHER = "weather";
+        final String OWM_TEMPERATURE = "temp";
+        final String OWM_MAX = "max";
+        final String OWM_MIN = "min";
+        final String OWM_DESCRIPTION = "main";
         String[] resultStrings = new String[numDays];
         for (int i = 0; i < weatherArray.length(); i++) {
             String day;
