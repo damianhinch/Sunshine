@@ -45,7 +45,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 final String text = listView.getItemAtPosition(position).toString();
                 Intent launchDetailView = new Intent(MainActivity.this, DetailView.class);
-                launchDetailView.putExtra("WEATHER_DATA", text);
+                launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
                 startActivity(launchDetailView);
             }
         });
