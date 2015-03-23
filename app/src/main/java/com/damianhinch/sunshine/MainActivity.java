@@ -1,5 +1,6 @@
 package com.damianhinch.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,8 +44,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 final String text = listView.getItemAtPosition(position).toString();
-                Toast toast = Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT);
-                toast.show();
+                Intent launchDetailView = new Intent(MainActivity.this, DetailView.class);
+                launchDetailView.putExtra("WEATHER_DATA", text);
+                startActivity(launchDetailView);
             }
         });
         new FetchWeatherAsyncTask().execute(POST_CODE);
