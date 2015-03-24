@@ -43,12 +43,16 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 final String text = listView.getItemAtPosition(position).toString();
-                Intent launchDetailView = new Intent(MainActivity.this, DetailView.class);
-                launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
-                startActivity(launchDetailView);
+                startDetailView(text);
             }
         });
         new FetchWeatherAsyncTask().execute(POST_CODE);
+    }
+
+    private void startDetailView(final String text) {
+        Intent launchDetailView = new Intent(this, DetailView.class);
+        launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
+        startActivity(launchDetailView);
     }
 
     private class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]> {
@@ -179,7 +183,8 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent intentToOpenSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
             new FetchWeatherAsyncTask().execute(POST_CODE);

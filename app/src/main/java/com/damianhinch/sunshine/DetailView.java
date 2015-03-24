@@ -42,7 +42,8 @@ public class DetailView extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            Intent intentToOpenSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(intentToOpenSettingsActivity);
         }
 
         return super.onOptionsItemSelected(item);
