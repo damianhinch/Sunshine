@@ -1,9 +1,11 @@
 package com.damianhinch.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
@@ -28,16 +30,31 @@ import java.net.URL;
 
 public class MainActivity extends ActionBarActivity {
 
-    //    public static final String URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
-    public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
-    public static final String LOG_TAG = "DOGS ARE MAD";
+    public static final String LOG_TAG = MainActivity.class.getCanonicalName();
     private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setUpListView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final String userPreferredLocation = getUserPreferredLocation();
+        populateListViewWithWeatherData(userPreferredLocation);
+    }
+
+    private String getUserPreferredLocation() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getString(getString(R.string.preference_location), getString(R.string.preference_default_value_location));
+    }
+
+    private void setUpListView() {
         listView = (ListView) findViewById(R.id.weather_list_view);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -46,7 +63,10 @@ public class MainActivity extends ActionBarActivity {
                 startDetailView(text);
             }
         });
-        new FetchWeatherAsyncTask().execute(POST_CODE);
+    }
+
+    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location) {
+        return new FetchWeatherAsyncTask().execute(location);
     }
 
     private void startDetailView(final String text) {
@@ -187,7 +207,8 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
-            new FetchWeatherAsyncTask().execute(POST_CODE);
+            final String userPreferedLocation = getUserPreferredLocation();
+            populateListViewWithWeatherData(userPreferedLocation);
             return true;
         }
 
