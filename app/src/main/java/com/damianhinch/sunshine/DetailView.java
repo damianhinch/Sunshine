@@ -3,6 +3,7 @@ package com.damianhinch.sunshine;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DetailView extends ActionBarActivity {
 
@@ -25,8 +25,6 @@ public class DetailView extends ActionBarActivity {
                     .add(R.id.container, new DetailViewFragment())
                     .commit();
         }
-
-
     }
 
 
@@ -45,6 +43,11 @@ public class DetailView extends ActionBarActivity {
             return true;
         }
 
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -60,13 +63,16 @@ public class DetailView extends ActionBarActivity {
 
             Intent intent = getActivity().getIntent();
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                TextView textView;
-                textView = (TextView) rootView.findViewById(R.id.detail_view_text_view_date_day);
-                String stringExtra = intent.getStringExtra(Intent.EXTRA_TEXT);
-                textView.setText(stringExtra);
+                setTextViewWithExtraText(rootView, intent);
             }
-
             return rootView;
+        }
+
+        private void setTextViewWithExtraText(final View rootView, final Intent intent) {
+            TextView textView;
+            textView = (TextView) rootView.findViewById(R.id.detail_view_text_view_date_day);
+            String stringExtra = intent.getStringExtra(Intent.EXTRA_TEXT);
+            textView.setText(stringExtra);
         }
     }
 }
