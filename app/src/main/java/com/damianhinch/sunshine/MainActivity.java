@@ -45,8 +45,14 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final String userPreferredLocation = getUserPreferredLocation();
-        populateListViewWithWeatherData(userPreferredLocation);
+        final String userLocationPreference = getUserPreferredLocation();
+        final String units = getUserUnitsPreference();
+        populateListViewWithWeatherData(userLocationPreference, units);
+    }
+
+    private String getUserUnitsPreference() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getString(getString(R.string.preference_units_key), getString(R.string.preference_default_value_units));
     }
 
     private String getUserPreferredLocation() {
@@ -65,8 +71,8 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location) {
-        return new FetchWeatherAsyncTask().execute(location);
+    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location, final String units) { //todo change to an enum
+        return new FetchWeatherAsyncTask().execute(location, units);
     }
 
     private void startDetailView(final String text) {
@@ -86,9 +92,10 @@ public class MainActivity extends ActionBarActivity {
 
         private String[] fetchWeather(String[] params) {
             // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-            String postalCode = params[0];
-            final String apiCall = getUri(postalCode, NUM_DAYS);
+            String forecastJsonStr;
+            final String postalCode = params[0];
+            final String units = params[1];
+            final String apiCall = getUri(postalCode, units , NUM_DAYS);
 
             forecastJsonStr = getForecastJsonString(apiCall);
 
@@ -158,14 +165,14 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        private String getUri(final String postCode, int numDays) {
+        private String getUri(final String postCode, final String units, int numDays) {
 
             Uri.Builder builder = new Uri.Builder();
-            buildUri(postCode, numDays, builder);
+            buildUri(postCode, units, numDays, builder);
             return builder.build().toString();
         }
 
-        private void buildUri(final String postCode, final int numDays, final Uri.Builder builder) {
+        private void buildUri(final String postCode, final String units, final int numDays, final Uri.Builder builder) {
             builder.scheme("http")
                     .authority("api.openweathermap.org")
                     .appendPath("data")
@@ -174,7 +181,7 @@ public class MainActivity extends ActionBarActivity {
                     .appendPath("daily")
                     .appendQueryParameter("q", postCode)
                     .appendQueryParameter("mode", "json")
-                    .appendQueryParameter("unit", "metric")
+                    .appendQueryParameter("unit", units)
                     .appendQueryParameter("cnt", String.valueOf(numDays));
         }
 
@@ -207,8 +214,9 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
-            final String userPreferredLocation = getUserPreferredLocation();
-            populateListViewWithWeatherData(userPreferredLocation);
+            final String userLocationPreference = getUserPreferredLocation();
+            final String userUnitsPreference = getUserUnitsPreference();
+            populateListViewWithWeatherData(userLocationPreference, userUnitsPreference);
             return true;
         }
 
