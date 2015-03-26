@@ -5,6 +5,8 @@
   <string name="menu_item_refresh">Refresh</string>
   <string name="title_activity_detail_view">DetailView</string>
 
+  <string name="title_activity_settings">Settings</string>
+
   <!--Preference Location-->
   <string name="preference_location">Location</string>
   <string name="preference_location_key" translatable="false">preference_location_key</string>
