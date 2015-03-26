@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
 
     private String getUserPreferredLocation() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getString(getString(R.string.preference_location), getString(R.string.preference_default_value_location));
+        return prefs.getString(getString(R.string.preference_location_key), getString(R.string.preference_default_value_location));
     }
 
     private void setUpListView() {
