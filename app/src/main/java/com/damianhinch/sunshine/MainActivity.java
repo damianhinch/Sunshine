@@ -207,8 +207,8 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
-            final String userPreferedLocation = getUserPreferredLocation();
-            populateListViewWithWeatherData(userPreferedLocation);
+            final String userPreferredLocation = getUserPreferredLocation();
+            populateListViewWithWeatherData(userPreferredLocation);
             return true;
         }
 

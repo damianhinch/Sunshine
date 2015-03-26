@@ -16,6 +16,7 @@ public class SettingsActivity extends PreferenceActivity
         // TODO: Add preferences from XML
         addPreferencesFromResource(R.xml.pref_general);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.preference_location_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.preference_units_key)));
 
     }
 

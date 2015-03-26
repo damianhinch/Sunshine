@@ -7,6 +7,11 @@
     android:inputType="text"
     android:singleLine="true" />
 
-
+  <ListPreference
+    android:title="Units"
+    android:key="@string/preference_units_key"
+    android:entries="@array/Unit"
+    android:entryValues="@array/unitAlias"
+    />
 
 </PreferenceScreen>
