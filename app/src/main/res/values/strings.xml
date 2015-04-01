@@ -17,6 +17,7 @@
   <string name="preference_units">Units</string>
   <string name="preference_units_key" translatable="false">preference_units_key</string>
   <string name="preference_default_value_units" translatable="false">metric</string>
+  <string name="toast_preferred_location_no_app_installed">You don\'t have a maps app installed to select the location from. Please enter your preferred location from the settings</string>
 
 </resources>
 

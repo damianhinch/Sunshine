@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.novoda.notils.caster.Views;
 
@@ -209,8 +210,30 @@ public class MainActivity extends ActionBarActivity {
             populateListViewWithWeatherData(userLocationPreference, userUnitsPreference);
             return true;
         }
+        if (id == R.id.set_preferred_location) {
+            openPreferredLocationOnMap();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPreferredLocationOnMap() {
+        final String location = Helpers.getUserPreferredLocation(this);
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent geoLocationIntent = new Intent(Intent.ACTION_VIEW);
+        geoLocationIntent.setData(geoLocation);
+
+        if (geoLocationIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(geoLocationIntent);
+        }
+        else {
+            Log.d(LOG_TAG, "Couldn't call " + location + " ,no maps app");
+            Toast.makeText(this,getString(R.string.toast_preferred_location_no_app_installed), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
