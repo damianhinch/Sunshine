@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!--Unit preference-->
+  <string-array name="Unit">
+    <item>"Metric"</item>
+    <item>"Archaic (Imperial)"</item>
+  </string-array>
+
+  <string-array name="unitAlias">
+    <item>"metric"</item>
+    <item>"imperial"</item>
+  </string-array>
+
+</resources>
