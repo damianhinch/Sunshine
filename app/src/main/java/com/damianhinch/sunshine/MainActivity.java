@@ -230,7 +230,7 @@ public class MainActivity extends ActionBarActivity {
             startActivity(geoLocationIntent);
         }
         else {
-            Log.d(LOG_TAG, "Couldn't call " + location + " ,no maps app");
+            Log.d(LOG_TAG, "Couldn't call " + location + " ,no maps app to view location");
             Toast.makeText(this,getString(R.string.toast_preferred_location_no_app_installed), Toast.LENGTH_LONG).show();
         }
 
