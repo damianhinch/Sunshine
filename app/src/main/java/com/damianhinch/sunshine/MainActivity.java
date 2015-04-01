@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.novoda.notils.caster.Views;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void setUpListView() {
-        listView = (ListView) findViewById(R.id.weather_list_view);
+        listView = Views.findById(this, R.id.weather_list_view);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
