@@ -1,11 +1,9 @@
 package com.damianhinch.sunshine;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
@@ -47,19 +45,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        final String userLocationPreference = getUserPreferredLocation();
-        final String units = getUserUnitsPreference();
+        final String userLocationPreference = Helpers.getUserPreferredLocation(this);
+        final String units = Helpers.getUserUnitsPreference(this);
         populateListViewWithWeatherData(userLocationPreference, units);
-    }
-
-    private String getUserUnitsPreference() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getString(getString(R.string.preference_units_key), getString(R.string.preference_default_value_units));
-    }
-
-    private String getUserPreferredLocation() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getString(getString(R.string.preference_location_key), getString(R.string.preference_default_value_location));
     }
 
     private void setUpListView() {
@@ -73,7 +61,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location, final String units) { //todo change to an enum
+    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location, final String units) { //todo change units to an enum
         return new FetchWeatherAsyncTask().execute(location, units);
     }
 
@@ -216,8 +204,8 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
-            final String userLocationPreference = getUserPreferredLocation();
-            final String userUnitsPreference = getUserUnitsPreference();
+            final String userLocationPreference = Helpers.getUserPreferredLocation(this);
+            final String userUnitsPreference =Helpers.getUserUnitsPreference(this);
             populateListViewWithWeatherData(userLocationPreference, userUnitsPreference);
             return true;
         }
