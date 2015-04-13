@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.novoda.notils.caster.Views;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,27 +31,45 @@ import java.net.URL;
 
 public class MainActivity extends ActionBarActivity {
 
-    //    public static final String URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
-    public static final String POST_CODE = "10247";
     public static final int NUM_DAYS = 7;
-    public static final String LOG_TAG = "DOGS ARE MAD";
+    public static final String LOG_TAG = MainActivity.class.getCanonicalName();
     private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.weather_list_view);
+
+        setUpListView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final String userLocationPreference = Helpers.getUserPreferredLocation(this);
+        final String units = Helpers.getUserUnitsPreference(this);
+        populateListViewWithWeatherData(userLocationPreference, units);
+    }
+
+    private void setUpListView() {
+        listView = Views.findById(this, R.id.weather_list_view);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 final String text = listView.getItemAtPosition(position).toString();
-                Intent launchDetailView = new Intent(MainActivity.this, DetailView.class);
-                launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
-                startActivity(launchDetailView);
+                startDetailView(text);
             }
         });
-        new FetchWeatherAsyncTask().execute(POST_CODE);
+    }
+
+    private AsyncTask<String, Void, String[]> populateListViewWithWeatherData(final String location, final String units) { //todo change units to an enum
+        return new FetchWeatherAsyncTask().execute(location, units);
+    }
+
+    private void startDetailView(final String text) {
+        Intent launchDetailView = new Intent(this, DetailView.class);
+        launchDetailView.putExtra(Intent.EXTRA_TEXT, text);
+        startActivity(launchDetailView);
     }
 
     private class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]> {
@@ -62,9 +83,10 @@ public class MainActivity extends ActionBarActivity {
 
         private String[] fetchWeather(String[] params) {
             // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-            String postalCode = params[0];
-            final String apiCall = getUri(postalCode, NUM_DAYS);
+            String forecastJsonStr;
+            final String postalCode = params[0];
+            final String units = params[1];
+            final String apiCall = getUri(postalCode, units, NUM_DAYS);
 
             forecastJsonStr = getForecastJsonString(apiCall);
 
@@ -134,14 +156,14 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        private String getUri(final String postCode, int numDays) {
+        private String getUri(final String postCode, final String units, int numDays) {
 
             Uri.Builder builder = new Uri.Builder();
-            buildUri(postCode, numDays, builder);
+            buildUri(postCode, units, numDays, builder);
             return builder.build().toString();
         }
 
-        private void buildUri(final String postCode, final int numDays, final Uri.Builder builder) {
+        private void buildUri(final String postCode, final String units, final int numDays, final Uri.Builder builder) {
             builder.scheme("http")
                     .authority("api.openweathermap.org")
                     .appendPath("data")
@@ -150,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
                     .appendPath("daily")
                     .appendQueryParameter("q", postCode)
                     .appendQueryParameter("mode", "json")
-                    .appendQueryParameter("unit", "metric")
+                    .appendQueryParameter("unit", units)
                     .appendQueryParameter("cnt", String.valueOf(numDays));
         }
 
@@ -179,14 +201,38 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent intentToOpenSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(intentToOpenSettingsActivity);
         }
         if (id == R.id.refresh_button) {
-            new FetchWeatherAsyncTask().execute(POST_CODE);
+            final String userLocationPreference = Helpers.getUserPreferredLocation(this);
+            final String userUnitsPreference = Helpers.getUserUnitsPreference(this);
+            populateListViewWithWeatherData(userLocationPreference, userUnitsPreference);
             return true;
+        }
+        if (id == R.id.set_preferred_location) {
+            openPreferredLocationOnMap();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPreferredLocationOnMap() {
+        final String location = Helpers.getUserPreferredLocation(this);
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent geoLocationIntent = new Intent(Intent.ACTION_VIEW);
+        geoLocationIntent.setData(geoLocation);
+
+        if (geoLocationIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(geoLocationIntent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + location + " ,no maps app to view location");
+            Toast.makeText(this, getString(R.string.toast_preferred_location_no_app_installed), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
@@ -238,4 +284,5 @@ public class MainActivity extends ActionBarActivity {
         }
         return resultStrings;
     }
+
 }
