@@ -1,5 +1,6 @@
 package com.damianhinch.sunshine;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -35,5 +36,5 @@ public class Helpers {
         return prefs.getString(context.getString(R.string.preference_location_key),
                 context.getString(R.string.preference_default_value_location));
     }
-
 }
+

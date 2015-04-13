@@ -86,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
             String forecastJsonStr;
             final String postalCode = params[0];
             final String units = params[1];
-            final String apiCall = getUri(postalCode, units , NUM_DAYS);
+            final String apiCall = getUri(postalCode, units, NUM_DAYS);
 
             forecastJsonStr = getForecastJsonString(apiCall);
 
@@ -206,7 +206,7 @@ public class MainActivity extends ActionBarActivity {
         }
         if (id == R.id.refresh_button) {
             final String userLocationPreference = Helpers.getUserPreferredLocation(this);
-            final String userUnitsPreference =Helpers.getUserUnitsPreference(this);
+            final String userUnitsPreference = Helpers.getUserUnitsPreference(this);
             populateListViewWithWeatherData(userLocationPreference, userUnitsPreference);
             return true;
         }
@@ -228,10 +228,9 @@ public class MainActivity extends ActionBarActivity {
 
         if (geoLocationIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(geoLocationIntent);
-        }
-        else {
+        } else {
             Log.d(LOG_TAG, "Couldn't call " + location + " ,no maps app to view location");
-            Toast.makeText(this,getString(R.string.toast_preferred_location_no_app_installed), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.toast_preferred_location_no_app_installed), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -285,4 +284,5 @@ public class MainActivity extends ActionBarActivity {
         }
         return resultStrings;
     }
+
 }

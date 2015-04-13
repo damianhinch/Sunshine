@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.novoda.notils.caster.Views;
 import com.novoda.notils.logger.simple.Log;
 
 public class DetailView extends ActionBarActivity {
@@ -52,7 +51,6 @@ public class DetailView extends ActionBarActivity {
     }
 
     public static class DetailViewFragment extends Fragment {
-
         private final String FORECAST_SHARE_HASHTAG = "#SunShine";
 
         private String forecastString;
