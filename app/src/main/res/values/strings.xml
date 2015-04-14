@@ -1,4 +1,5 @@
 <resources>
+  <!--General -->
   <string name="app_name">Sunshine</string>
   <string name="hello_world">Hello world!</string>
   <string name="action_settings">Settings</string>
@@ -17,8 +18,13 @@
   <!--Preference Units-->
   <string name="preference_units">Units</string>
   <string name="preference_units_key" translatable="false">preference_units_key</string>
+  <string name="pref_units_metric">Metric</string>
+  <string name="pref_units_imperial">Imperial (Archaic)</string>
   <string name="preference_default_value_units" translatable="false">metric</string>
+
+  <!--Toast-->
   <string name="toast_preferred_location_no_app_installed">You don\'t have a maps app installed to view the location.</string>
+
 
 </resources>
 
