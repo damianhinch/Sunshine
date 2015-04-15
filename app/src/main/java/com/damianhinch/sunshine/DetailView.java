@@ -68,7 +68,7 @@ public class DetailView extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail_view, container, false);
 
-            textView = (TextView) rootView.findViewById(R.id.detail_view_text_view_date_day);
+            textView = (TextView) rootView.findViewById(R.id.list_item_forecast_textview);
 
             Intent intent = getActivity().getIntent();
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
