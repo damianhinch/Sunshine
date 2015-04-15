@@ -1,48 +1,65 @@
 package com.damianhinch.sunshine;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.damianhinch.sunshine.data.FetchWeatherTask;
+import com.damianhinch.sunshine.data.WeatherContract;
 import com.novoda.notils.caster.Views;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-import java.util.ArrayList;
-
-public class MainActivity extends ActionBarActivity {
-
-    public static final int NUM_DAYS = 7;
     public static final String LOG_TAG = MainActivity.class.getCanonicalName();
     private ListView listView;
-    private ArrayAdapter<String> forecastAdapter;
+
+    private static final int FORECAST_LOADER = 0;
+    // For the forecast view we're showing only a small subset of the stored data.
+    // Specify the columns we need.
+    private static final String[] FORECAST_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
+    };
+
+    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
+    // must change.
+    static final int COL_WEATHER_ID = 0;
+    static final int COL_WEATHER_DATE = 1;
+    static final int COL_WEATHER_DESC = 2;
+    static final int COL_WEATHER_MAX_TEMP = 3;
+    static final int COL_WEATHER_MIN_TEMP = 4;
+    static final int COL_LOCATION_SETTING = 5;
+    static final int COL_WEATHER_CONDITION_ID = 6;
+    static final int COL_COORD_LAT = 7;
+    static final int COL_COORD_LONG = 8;
+
+    private ForecastAdapter forecastAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        forecastAdapter =
-                new ArrayAdapter<>(
-                        this,
-                        R.layout.list_item_forecast,
-                        R.id.list_item_forecast_text_view,
-                        new ArrayList<String>());
-        setUpListView();
+        forecastAdapter = new ForecastAdapter(this, null, 0);
+
     }
 
     @Override
@@ -119,4 +136,23 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(final int i, final Bundle bundle) {
+        String locateSetting = Helpers.getUserPreferredLocation(this);
+
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + "ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locateSetting, System.currentTimeMillis());
+
+        return new CursorLoader(this, weatherForLocationUri, null, null, null, sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(final Loader<Cursor> cursorLoader, final Cursor cursor) {
+        forecastAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(final Loader<Cursor> cursorLoader) {
+
+    }
 }
