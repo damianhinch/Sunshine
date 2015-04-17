@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import java.util.Map;
 import java.util.Set;
