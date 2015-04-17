@@ -30,6 +30,12 @@
 
     <provider
       android:authorities="com.damianhinch.sunshine"
-      android:name=".data.WeatherProvider"/>
+      android:name=".data.WeatherProvider" />
   </application>
+
+  <permission
+    android:name="com.damianhinch.LICENSE_TO_KILL"
+    android:protectionLevel="dangerous"
+    android:label="Licenced to Kill-a-roney" />
+
 </manifest>
