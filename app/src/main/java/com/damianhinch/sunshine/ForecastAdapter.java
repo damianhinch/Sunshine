@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.novoda.notils.caster.Views;
+import com.novoda.notils.exception.DeveloperError;
 
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
@@ -17,12 +17,21 @@ import com.novoda.notils.caster.Views;
  */
 public class ForecastAdapter extends CursorAdapter {
 
-    Context context;
+    private final int VIEW_TYPE_TODAY = 0;              // final on primitives means the value can't change
+    private final int VIEW_TYPE_FUTURE_DAY = 1;
 
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+    }
 
-        this.context = context;
+    @Override
+    public int getItemViewType(final int position) {
+        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
     }
 
     /**
@@ -53,8 +62,20 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_forecast, parent, false);
+        int viewType = getItemViewType(cursor.getPosition());
+        int layoutId;
 
+        if (viewType == VIEW_TYPE_FUTURE_DAY) {
+            layoutId = R.layout.list_item_forecast;
+        } else if (viewType == VIEW_TYPE_TODAY) {
+            layoutId = R.layout.list_item_forcecast_today;
+        } else {
+            throw new DeveloperError("New type was added. ");
+        }
+
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
         return view;
     }
 
@@ -63,43 +84,59 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        setIcon(view, cursor);
-        setDate(view, cursor);
-        setWeatherDescription(view, cursor);
-        setMaxTemperature(view, context, cursor);
-        setMinTemperature(view, context, cursor);
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+        viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+
+        setDate(context, cursor, viewHolder);
+        setDescription(cursor, viewHolder);
+        setTempMin(context, cursor, viewHolder);
+        setTempMax(context, cursor, viewHolder);
+
     }
 
-    private void setMinTemperature(final View view, final Context context, final Cursor cursor) {
-        boolean isMetric = Helpers.isMetric(context);
-        double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        TextView lowView = (TextView) view.findViewById(R.id.weather_list_view_item_min_temp);
-        lowView.setText(Helpers.formatTemperature(low, isMetric));
-    }
-
-    private void setMaxTemperature(final View view, final Context context, final Cursor cursor) {
+    private void setTempMax(Context context, Cursor cursor, ViewHolder viewHolder) {
         boolean isMetric = Helpers.isMetric(context);
         double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        TextView highView = (TextView) view.findViewById(R.id.weather_list_view_item_max_temp);
-        highView.setText(Helpers.formatTemperature(high, isMetric));
+        viewHolder.highTempView.setText(Helpers.formatTemperature(high, isMetric));
     }
 
-    private void setWeatherDescription(final View view, final Cursor cursor) {
-        String forecast = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
-        TextView textViewForecastString = (TextView) view.findViewById(R.id.weather_list_view_item_weather_condition);
-        textViewForecastString.setText(forecast);
+    private void setTempMin(Context context, Cursor cursor, ViewHolder viewHolder) {
+        boolean isMetric = Helpers.isMetric(context);
+        double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+        viewHolder.lowTempView.setText(Helpers.formatTemperature(low, isMetric));
     }
 
-    private void setDate(final View view, final Cursor cursor) {
+    private void setDescription(Cursor cursor, ViewHolder viewHolder) {
+        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        viewHolder.dateView.setText(description);
+    }
+
+    private void setDate(Context context, Cursor cursor, ViewHolder viewHolder) {
         long date = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        TextView textViewDate = (TextView) view.findViewById(R.id.weather_list_view_item_date);
-        textViewDate.setText(Helpers.formatDate(date));
+        viewHolder.dateView.setText(Helpers.getFriendlyDayString(context, date));
     }
 
-    private void setIcon(final View view, final Cursor cursor) {
-        // todo select the correct image to show depending on the weather
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
-        ImageView iconView = (ImageView) view.findViewById(R.id.weather_list_view_item_icon);
-        iconView.setImageResource(R.drawable.ic_launcher);
+    /**
+     * Cache of the children views for a forecast list item.
+     */
+    public static class ViewHolder {
+        public final ImageView iconView;
+        public final TextView dateView;
+        public final TextView descriptionView;
+        public final TextView highTempView;
+        public final TextView lowTempView;
+
+        public ViewHolder(View view) {
+            // todo select the correct image to show depending on the weather
+            iconView = (ImageView) view.findViewById(R.id.weather_list_view_item_icon);
+            dateView = (TextView) view.findViewById(R.id.weather_list_view_item_date);
+            descriptionView = (TextView) view.findViewById(R.id.weather_list_view_item_weather_condition);
+            highTempView = (TextView) view.findViewById(R.id.weather_list_view_item_max_temp);
+            lowTempView = (TextView) view.findViewById(R.id.weather_list_view_item_min_temp);
+        }
+
+
     }
+
+
 }
