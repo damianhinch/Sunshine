@@ -1,5 +1,6 @@
 package com.damianhinch.sunshine;
 
+import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -39,7 +40,7 @@ public class ForecastAdapter extends CursorAdapter {
      */
     private String formatHighLows(double high, double low) {
         boolean isMetric = Helpers.isMetric(mContext);
-        String highLowStr = Helpers.formatTemperature(high, isMetric) + "/" + Helpers.formatTemperature(low, isMetric);
+        String highLowStr = Helpers.formatTemperature(mContext, high, isMetric) + "/" + Helpers.formatTemperature(mContext, low, isMetric);
         return highLowStr;
     }
 
@@ -97,13 +98,13 @@ public class ForecastAdapter extends CursorAdapter {
     private void setTempMax(Context context, Cursor cursor, ViewHolder viewHolder) {
         boolean isMetric = Helpers.isMetric(context);
         double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        viewHolder.highTempView.setText(Helpers.formatTemperature(high, isMetric));
+        viewHolder.highTempView.setText(Helpers.formatTemperature(context, high, isMetric));
     }
 
     private void setTempMin(Context context, Cursor cursor, ViewHolder viewHolder) {
         boolean isMetric = Helpers.isMetric(context);
         double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        viewHolder.lowTempView.setText(Helpers.formatTemperature(low, isMetric));
+        viewHolder.lowTempView.setText(Helpers.formatTemperature(context, low, isMetric));
     }
 
     private void setDescription(Cursor cursor, ViewHolder viewHolder) {
