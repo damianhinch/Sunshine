@@ -54,14 +54,14 @@ public class Helpers {
         return DateFormat.getDateInstance().format(date);
     }
 
-    static String formatTemperature(double temperature, boolean isMetric) {
+    static String formatTemperature(Context context, double temperature, boolean isMetric) {
         double temp;
         if (!isMetric) {
             temp = 9 * temperature / 5 + 32;
         } else {
             temp = temperature;
         }
-        return String.format("%.0f", temp);
+        return context.getString(R.string.format_temperature, temp);
     }
 
     // Format used for storing dates in the database.  ALso used for converting those strings
