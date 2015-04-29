@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:orientation="horizontal"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_margin="20dp">
+
+  <!--Column 1-->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:layout_weight="1">
+
+    <TextView
+      android:id="@+id/weather_list_view_item_date"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal"
+      android:paddingBottom="12dp"
+      android:paddingTop="12dp"
+      android:textSize="16sp"
+      tools:text="Today, September 11" />
+
+    <TextView
+      android:id="@+id/weather_list_view_item_max_temp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:paddingBottom="12dp"
+      android:paddingTop="12dp"
+      android:textSize="24sp"
+      tools:text="11°C" />
+
+    <TextView
+      android:id="@+id/weather_list_view_item_min_temp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:paddingBottom="12dp"
+      android:paddingTop="12dp"
+      android:textSize="16sp"
+      tools:text="9°C" />
+
+  </LinearLayout>
+
+  <!--Column 2-->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:layout_weight="1">
+
+    <ImageView
+      android:id="@+id/weather_list_view_item_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="100dp"
+      android:src="@drawable/ic_launcher"
+      android:layout_weight="1" />
+
+    <TextView
+      android:id="@+id/weather_list_view_item_weather_condition"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      tools:text="Alles klar" />
+
+
+  </LinearLayout>
+
+</LinearLayout>

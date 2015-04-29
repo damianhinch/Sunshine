@@ -137,10 +137,10 @@ public class DetailView extends ActionBarActivity {
 
             boolean isMetric = Helpers.isMetric(getActivity());
 
-            String high = Helpers.formatTemperature(
-                    data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
+            String high = Helpers.formatTemperature(getActivity(),
+                    data.getDouble( COL_WEATHER_MAX_TEMP), isMetric);
 
-            String low = Helpers.formatTemperature(
+            String low = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
             mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
