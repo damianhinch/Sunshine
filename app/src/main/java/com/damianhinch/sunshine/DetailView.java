@@ -19,10 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class DetailView extends ActionBarActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +37,6 @@ public class DetailView extends ActionBarActivity {
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
@@ -47,14 +46,30 @@ public class DetailView extends ActionBarActivity {
         private ShareActionProvider mShareActionProvider;
         private String mForecast;
 
+
+        private TextView dateDateTextView;
+        private TextView dateMonthWithDayTextView;
+        private TextView temperatureMaxTextView;
+        private TextView temperatureMinTextView;
+        private ImageView conditionImage;
+        private TextView humidityTextView;
+        private TextView windTextView;
+        private TextView pressureTextView;
+
+
         private static final int DETAIL_LOADER = 0;
 
         private static final String[] FORECAST_COLUMNS = {
-                WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+                WeatherContract.WeatherEntry.TABLE_NAME + "." +
+                        WeatherContract.WeatherEntry._ID,
                 WeatherContract.WeatherEntry.COLUMN_DATE,
                 WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
                 WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
                 WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+                WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+                WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+                WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+                WeatherContract.WeatherEntry.COLUMN_DEGREES
         };
 
         // these constants correspond to the projection defined above, and must change if the
@@ -64,6 +79,9 @@ public class DetailView extends ActionBarActivity {
         private static final int COL_WEATHER_DESC = 2;
         private static final int COL_WEATHER_MAX_TEMP = 3;
         private static final int COL_WEATHER_MIN_TEMP = 4;
+        private static final int COL_WEATHER_HUMIDITY = 5;
+        private static final int COL_WEATHER_PRESSURE = 6;
+        private static final int COL_WEATHER_WIND_SPEED = 7;
 
         public DetailFragment() {
             setHasOptionsMenu(true);
@@ -72,7 +90,25 @@ public class DetailView extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             return inflater.inflate(R.layout.fragment_detail_view, container, false);
+
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {     // Called after onCreateView
+            super.onViewCreated(view, savedInstanceState);
+
+
+            dateDateTextView = (TextView) view.findViewById(R.id.detail_date_day);
+            dateMonthWithDayTextView = (TextView) view.findViewById(R.id.detail_date_month_and_day);
+            temperatureMaxTextView = (TextView) view.findViewById(R.id.detail_temp_max);
+            temperatureMinTextView = (TextView) view.findViewById(R.id.detail_temp_min);
+            humidityTextView = (TextView) view.findViewById(R.id.detail_humidity);
+            windTextView = (TextView) view.findViewById(R.id.detail_wind);
+            pressureTextView = (TextView) view.findViewById(R.id.detail_pressure);
+
+
         }
 
         @Override
@@ -139,11 +175,21 @@ public class DetailView extends ActionBarActivity {
 
             String high = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
-
             String low = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
+            String humidity = data.getString(COL_WEATHER_HUMIDITY);
+            String wind = data.getString(COL_WEATHER_WIND_SPEED);
+            String pressure = data.getString(COL_WEATHER_PRESSURE);
 
             mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
+
+            dateMonthWithDayTextView.setText(dateString);
+            temperatureMaxTextView.setText(high);
+            temperatureMinTextView.setText(low);
+            humidityTextView.setText(humidity);
+            windTextView.setText(wind);
+            pressureTextView.setText(pressure);
+
 
             TextView detailTextView = (TextView) getView().findViewById(R.id.detail_date_day);
             detailTextView.setText(mForecast);
