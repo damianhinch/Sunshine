@@ -1,5 +1,7 @@
 package com.damianhinch.sunshine;
 
+import com.damianhinch.sunshine.data.WeatherContract;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -18,8 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.damianhinch.sunshine.data.WeatherContract;
 
 
 public class DetailView extends ActionBarActivity {
@@ -138,14 +138,14 @@ public class DetailView extends ActionBarActivity {
             boolean isMetric = Helpers.isMetric(getActivity());
 
             String high = Helpers.formatTemperature(getActivity(),
-                    data.getDouble( COL_WEATHER_MAX_TEMP), isMetric);
+                    data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
 
             String low = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
             mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
 
-            TextView detailTextView = (TextView) getView().findViewById(R.id.detail_text);
+            TextView detailTextView = (TextView) getView().findViewById(R.id.detail_date_day);
             detailTextView.setText(mForecast);
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now.
