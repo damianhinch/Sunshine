@@ -1,6 +1,7 @@
 package com.damianhinch.sunshine;
 
-import android.app.Application;
+import com.novoda.notils.exception.DeveloperError;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -9,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.novoda.notils.exception.DeveloperError;
 
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
@@ -109,7 +108,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     private void setDescription(Cursor cursor, ViewHolder viewHolder) {
         String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
-        viewHolder.dateView.setText(description);
+        viewHolder.descriptionView.setText(description);
     }
 
     private void setDate(Context context, Cursor cursor, ViewHolder viewHolder) {
