@@ -82,7 +82,6 @@ public class DetailView extends ActionBarActivity {
         private static final int COL_WEATHER_HUMIDITY = 5;
         private static final int COL_WEATHER_PRESSURE = 6;
         private static final int COL_WEATHER_WIND_SPEED = 7;
-        private static final int COL_WEATHER_POSITION_DEGREES = 8;
 
         public DetailFragment() {
             setHasOptionsMenu(true);
@@ -176,21 +175,17 @@ public class DetailView extends ActionBarActivity {
 
             String high = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
-
             String low = Helpers.formatTemperature(getActivity(),
                     data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
-
             String humidity = data.getString(COL_WEATHER_HUMIDITY);
             String wind = data.getString(COL_WEATHER_WIND_SPEED);
             String pressure = data.getString(COL_WEATHER_PRESSURE);
 
             mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
 
-//            dateDateTextView.setText(dateString);
             dateMonthWithDayTextView.setText(dateString);
             temperatureMaxTextView.setText(high);
             temperatureMinTextView.setText(low);
-//
             humidityTextView.setText(humidity);
             windTextView.setText(wind);
             pressureTextView.setText(pressure);
