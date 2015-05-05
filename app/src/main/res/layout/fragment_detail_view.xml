@@ -1,17 +1,95 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:paddingLeft="@dimen/activity_horizontal_margin"
-  android:paddingRight="@dimen/activity_horizontal_margin"
-  android:paddingTop="@dimen/activity_vertical_margin"
-  android:paddingBottom="@dimen/activity_vertical_margin"
-  tools:context="com.example.android.sunshine.app.DetailActivity.DetailFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.android.sunshine.app.DetailActivity.DetailFragment">
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:id="@+id/detail_text"
-    android:layout_height="wrap_content"
-    tools:text="Weather looing good"/>
+    <TextView
+        android:id="@+id/detail_date_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Today" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/detail_date_month_and_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="March 19" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/detail_temp_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                tools:text="11°" />
+
+            <TextView
+                android:id="@+id/detail_temp_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                tools:text="9°" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/detail_weather_image"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="3"
+                android:maxHeight="30dp"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/detail_weather_condition"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="10dp"
+                tools:text="Clear" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/detail_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Humidity: 84%" />
+
+    <TextView
+        android:id="@+id/detail_wind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Wind: 6 km/H NW" />
+
+    <TextView
+        android:id="@+id/detail_pressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Pressure: 1014 kPa" />
+
+</LinearLayout>
