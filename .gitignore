@@ -35,3 +35,4 @@ proguard/
 .gradle/
 
 team-props/
+.navigation
