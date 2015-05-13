@@ -58,7 +58,7 @@
       android:id="@+id/weather_list_view_item_icon"
       android:layout_width="wrap_content"
       android:layout_height="100dp"
-      android:src="@drawable/ic_launcher"
+      android:src="@drawable/art_clear"
       android:layout_weight="1" />
 
     <TextView
