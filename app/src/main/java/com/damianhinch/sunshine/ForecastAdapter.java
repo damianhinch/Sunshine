@@ -85,16 +85,17 @@ public class ForecastAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
+        int viewType = getItemViewType(cursor.getPosition());
 
         setDate(context, cursor, viewHolder);
         setDescription(cursor, viewHolder);
         setTempMin(context, cursor, viewHolder);
         setTempMax(context, cursor, viewHolder);
-        setImage(cursor, viewHolder);
+        setImage(cursor, viewHolder, viewType);
 
     }
 
-    private void setImage(Cursor cursor, ViewHolder viewHolder) {
+    private void setImage(Cursor cursor, ViewHolder viewHolder, int viewType) {
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         final int artResourceForWeatherCondition = Helpers.getArtResourceForWeatherCondition(weatherId);
         viewHolder.iconView.setImageResource(artResourceForWeatherCondition);

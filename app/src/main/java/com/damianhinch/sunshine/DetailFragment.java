@@ -172,7 +172,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         humidityTextView.setText(humidityTextView.getText() + " " + humidity);
         windTextView.setText(windTextView.getText() + " " + wind);
         pressureTextView.setText(pressureTextView.getText() + " " + pressure);
-        conditionImage.setImageResource(Helpers.getArtResourceForWeatherCondition(weatherId));
+        conditionImage.setImageResource(Helpers.getArtResourceForWeatherCondition(500));
 
 
         TextView detailTextView = (TextView) getView().findViewById(R.id.detail_date_day);
