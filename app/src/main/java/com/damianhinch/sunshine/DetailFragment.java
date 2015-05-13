@@ -162,7 +162,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String humidity = data.getString(COL_WEATHER_HUMIDITY);
         String wind = data.getString(COL_WEATHER_WIND_SPEED);
         String pressure = data.getString(COL_WEATHER_PRESSURE);
-        String weatherId = data.getString(COL_WEATHER_ID);
+        int weatherId = data.getInt(COL_WEATHER_ID);
 
         mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
 
@@ -172,7 +172,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         humidityTextView.setText(humidityTextView.getText() + " " + humidity);
         windTextView.setText(windTextView.getText() + " " + wind);
         pressureTextView.setText(pressureTextView.getText() + " " + pressure);
-        conditionImage.setImageResource(Helpers.getArtResourceForWeatherCondition(Integer.parseInt(weatherId)));
+        conditionImage.setImageResource(Helpers.getArtResourceForWeatherCondition(weatherId));
 
 
         TextView detailTextView = (TextView) getView().findViewById(R.id.detail_date_day);

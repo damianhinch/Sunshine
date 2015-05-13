@@ -90,11 +90,11 @@ public class ForecastAdapter extends CursorAdapter {
         setDescription(cursor, viewHolder);
         setTempMin(context, cursor, viewHolder);
         setTempMax(context, cursor, viewHolder);
-        setImage(context, cursor, viewHolder);
+        setImage(cursor, viewHolder);
 
     }
 
-    private void setImage(Context context, Cursor cursor, ViewHolder viewHolder) {
+    private void setImage(Cursor cursor, ViewHolder viewHolder) {
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         final int artResourceForWeatherCondition = Helpers.getArtResourceForWeatherCondition(weatherId);
         viewHolder.iconView.setImageResource(artResourceForWeatherCondition);
