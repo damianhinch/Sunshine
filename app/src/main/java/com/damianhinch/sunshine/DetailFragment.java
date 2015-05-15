@@ -83,7 +83,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onViewCreated(View view, Bundle savedInstanceState) {     // Called after onCreateView
         super.onViewCreated(view, savedInstanceState);
 
-
         dateDateTextView = (TextView) view.findViewById(R.id.detail_date_day);
         dateMonthWithDayTextView = (TextView) view.findViewById(R.id.detail_date_month_and_day);
         temperatureMaxTextView = (TextView) view.findViewById(R.id.detail_temp_max);
@@ -91,8 +90,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         humidityTextView = (TextView) view.findViewById(R.id.detail_humidity);
         windTextView = (TextView) view.findViewById(R.id.detail_wind);
         pressureTextView = (TextView) view.findViewById(R.id.detail_pressure);
-
-
+        conditionImage = (ImageView) view.findViewById(R.id.detail_weather_image);
     }
 
     @Override
@@ -164,15 +162,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String humidity = data.getString(COL_WEATHER_HUMIDITY);
         String wind = data.getString(COL_WEATHER_WIND_SPEED);
         String pressure = data.getString(COL_WEATHER_PRESSURE);
+        int weatherId = data.getInt(COL_WEATHER_ID);
 
         mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
 
         dateMonthWithDayTextView.setText(dateString);
         temperatureMaxTextView.setText(high);
         temperatureMinTextView.setText(low);
-        humidityTextView.setText(humidity);
-        windTextView.setText(wind);
-        pressureTextView.setText(pressure);
+        humidityTextView.setText(humidityTextView.getText() + " " + humidity);
+        windTextView.setText(windTextView.getText() + " " + wind);
+        pressureTextView.setText(pressureTextView.getText() + " " + pressure);
+        conditionImage.setImageResource(Helpers.getArtResourceForWeatherCondition(500));
 
 
         TextView detailTextView = (TextView) getView().findViewById(R.id.detail_date_day);
