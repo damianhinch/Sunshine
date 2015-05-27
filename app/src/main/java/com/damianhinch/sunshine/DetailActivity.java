@@ -4,8 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 
-public class DetailView extends ActionBarActivity {
-
+public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,7 +12,7 @@ public class DetailView extends ActionBarActivity {
         setContentView(R.layout.activity_detail_view);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
+                    .add(R.id.weather_detail_container, new DetailFragment())
                     .commit();
         }
     }
