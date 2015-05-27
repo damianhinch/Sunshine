@@ -90,9 +90,9 @@ public class MainActivity extends ActionBarActivity {
         String location = Helpers.getUserPreferredLocation(this);
         // update the location in our second pane using the fragment manager
         if (location != null && !location.equals(mLocation)) {
-            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-            if (null != ff) {
-                ff.onLocationChanged();
+            ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+            if (forecastFragment != null) {
+                forecastFragment.onLocationChanged();
             }
             mLocation = location;
         }
