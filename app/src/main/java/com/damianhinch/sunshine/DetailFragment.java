@@ -4,6 +4,7 @@ import com.damianhinch.sunshine.data.WeatherContract;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -26,6 +27,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+    public static final String DETAIL_URI = "URI";
 
     private ShareActionProvider mShareActionProvider;
     private String mForecast;
@@ -43,6 +45,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
+    private Uri uri;
+
     private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." +
                     WeatherContract.WeatherEntry._ID,
@@ -54,6 +58,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             WeatherContract.WeatherEntry.COLUMN_PRESSURE,
             WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
             WeatherContract.WeatherEntry.COLUMN_DEGREES
+    };
+
+    private static final String[] DETAIL_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+            WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherContract.WeatherEntry.COLUMN_DEGREES,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING
     };
 
     // these constants correspond to the projection defined above, and must change if the
@@ -75,23 +93,36 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_detail_view, container, false);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            uri = arguments.getParcelable(DetailFragment.DETAIL_URI);
+        }
 
+        View rootView = inflater.inflate(R.layout.fragment_detail_view, container, false);
+        dateDateTextView = (TextView) rootView.findViewById(R.id.detail_date_day);
+        dateMonthWithDayTextView = (TextView) rootView.findViewById(R.id.detail_date_month_and_day);
+        temperatureMaxTextView = (TextView) rootView.findViewById(R.id.detail_temp_max);
+        temperatureMinTextView = (TextView) rootView.findViewById(R.id.detail_temp_min);
+        humidityTextView = (TextView) rootView.findViewById(R.id.detail_humidity);
+        windTextView = (TextView) rootView.findViewById(R.id.detail_wind);
+        pressureTextView = (TextView) rootView.findViewById(R.id.detail_pressure);
+        conditionImage = (ImageView) rootView.findViewById(R.id.detail_weather_image);
+        return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {     // Called after onCreateView
-        super.onViewCreated(view, savedInstanceState);
-
-        dateDateTextView = (TextView) view.findViewById(R.id.detail_date_day);
-        dateMonthWithDayTextView = (TextView) view.findViewById(R.id.detail_date_month_and_day);
-        temperatureMaxTextView = (TextView) view.findViewById(R.id.detail_temp_max);
-        temperatureMinTextView = (TextView) view.findViewById(R.id.detail_temp_min);
-        humidityTextView = (TextView) view.findViewById(R.id.detail_humidity);
-        windTextView = (TextView) view.findViewById(R.id.detail_wind);
-        pressureTextView = (TextView) view.findViewById(R.id.detail_pressure);
-        conditionImage = (ImageView) view.findViewById(R.id.detail_weather_image);
-    }
+//    @Override
+//    public void onViewCreated(View view, Bundle savedInstanceState) {     // Called after onCreateView
+//        super.onViewCreated(view, savedInstanceState);
+//
+//        dateDateTextView = (TextView) view.findViewById(R.id.detail_date_day);
+//        dateMonthWithDayTextView = (TextView) view.findViewById(R.id.detail_date_month_and_day);
+//        temperatureMaxTextView = (TextView) view.findViewById(R.id.detail_temp_max);
+//        temperatureMinTextView = (TextView) view.findViewById(R.id.detail_temp_min);
+//        humidityTextView = (TextView) view.findViewById(R.id.detail_humidity);
+//        windTextView = (TextView) view.findViewById(R.id.detail_wind);
+//        pressureTextView = (TextView) view.findViewById(R.id.detail_pressure);
+//        conditionImage = (ImageView) view.findViewById(R.id.detail_weather_image);
+//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -120,23 +151,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onActivityCreated(savedInstanceState);
     }
 
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
-        if (intent == null || intent.getData() == null) {
-            return null;
+        if (null != uri) {
+            // Now create and return a CursorLoader that will take care of
+            // creating a Cursor for the data being displayed.
+            return new CursorLoader(
+                    getActivity(),
+                    uri,
+                    DETAIL_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
         }
-
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(
-                getActivity(),
-                intent.getData(),
-                FORECAST_COLUMNS,
-                null,
-                null,
-                null
-        );
+        return null;
     }
 
     @Override
